@@ -15,4 +15,9 @@ urlpatterns = [
         views.complete_chore,
         name="complete_chore",
     ),
+    path(
+    "households/<int:household_id>/calendar/",
+    views.calendar,
+    name="calendar",
+    ),
 ]

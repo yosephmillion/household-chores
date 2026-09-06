@@ -17,6 +17,11 @@
 <body>
 
     <h1>{{ household.name }}</h1>
+    <p>
+    <a href="{% url 'calendar' household.id %}">
+        📅 View Calendar
+    </a>
+</p>
 
     <h2>Chores</h2>
 

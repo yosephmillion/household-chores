@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ household.name }} - Calendar</title>
+</head>
+
+<body>
+
+    <h1>{{ household.name }} - Calendar</h1>
+
+    <p>
+        <a href="{% url 'dashboard' household.id %}">
+            ← Back to Dashboard
+        </a>
+    </p>
+
+    <h2>Upcoming Chores</h2>
+
+    {% for chore in chores %}
+
+        <div>
+            <h3>{{ chore.due_date }}</h3>
+
+            <p>
+                <strong>{{ chore.title }}</strong>
+            </p>
+
+            <p>
+                Assigned to: {{ chore.assigned_to.name }}
+            </p>
+
+            {% if chore.completed %}
+                <p>✅ Completed</p>
+            {% else %}
+                <p>⏳ Pending</p>
+            {% endif %}
+        </div>
+
+        <hr>
+
+    {% empty %}
+
+        <p>No chores scheduled.</p>
+
+    {% endfor %}
+
+</body>
+</html>

@@ -76,3 +76,17 @@ def complete_chore(request, chore_id):
         chore.save()
 
     return redirect("dashboard", household_id=chore.household.id)
+
+def calendar(request, household_id):
+    household = get_object_or_404(Household, id=household_id)
+
+    chores = household.chores.select_related("assigned_to").order_by("due_date")
+
+    return render(
+        request,
+        "chores/calendar.html",
+        {
+            "household": household,
+            "chores": chores,
+        },
+    )
