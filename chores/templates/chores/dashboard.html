@@ -2,6 +2,16 @@
 <html>
 <head>
     <title>{{ household.name }} - Chores</title>
+    <style>
+    .done-button {
+        background-color: green;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
 </head>
 
 <body>
@@ -32,6 +42,14 @@
             {% else %}
                 <p>⏳ Pending</p>
             {% endif %}
+
+            {% if not chore.completed %}
+                <form method="post" action="{% url 'complete_chore' chore.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Complete</button>
+                </form>
+            {% endif %}
+
         </div>
 
         <hr>

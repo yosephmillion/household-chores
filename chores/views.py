@@ -1,7 +1,19 @@
-from django.shortcuts import get_object_or_404, render
-from django.utils import timezone
+from datetime import timedelta
+
+
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Household
+from django.utils import timezone
+
+from .models import Household, Chore, ChoreCompletion
+
+
+def home(request):
+    household = Household.objects.filter(chores__isnull=False).first()
+
+    if household is None:
+        return redirect("/admin/")
+
+    return redirect("dashboard", household_id=household.id)
 
 
 def dashboard(request, household_id):
@@ -23,10 +35,44 @@ def dashboard(request, household_id):
         },
     )
 
-def home(request):
-    household = Household.objects.filter(chores__isnull=False).first()
 
-    if household is None:
-        return redirect("/admin/")
+def complete_chore(request, chore_id):
+    chore = get_object_or_404(Chore, id=chore_id)
 
-    return redirect("dashboard", household_id=household.id)
+    if request.method == "POST" and not chore.completed:
+
+        # Record the completion
+        ChoreCompletion.objects.create(
+            chore=chore,
+            member=chore.assigned_to,
+        )
+
+        if chore.chore_type == Chore.RECURRING:
+            # Get household members in a predictable order
+            members = list(
+                chore.household.members.order_by("id")
+            )
+
+            # Find the current member
+            current_index = next(
+                i for i, member in enumerate(members)
+                if member.id == chore.assigned_to_id
+            )
+
+            # Move to the next member
+            next_index = (current_index + 1) % len(members)
+            chore.assigned_to = members[next_index]
+
+            # Make it due 7 days later
+            chore.due_date = chore.due_date + timedelta(days=7)
+
+            # Recurring chores become pending again
+            chore.completed = False
+
+        else:
+            # One-time chores stay completed
+            chore.completed = True
+
+        chore.save()
+
+    return redirect("dashboard", household_id=chore.household.id)
