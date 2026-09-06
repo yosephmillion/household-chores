@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ household.name }} - Chores</title>
+</head>
+
+<body>
+
+    <h1>{{ household.name }}</h1>
+
+    <h2>Chores</h2>
+
+    {% for chore in chores %}
+
+        <div>
+            <h3>{{ chore.title }}</h3>
+
+            <p>
+                Assigned to: {{ chore.assigned_to.name }}
+            </p>
+
+            <p>
+                Due: {{ chore.due_date }}
+            </p>
+
+            {% if chore.completed %}
+                <p>✅ Completed</p>
+
+            {% elif chore.is_overdue %}
+                <p>⚠️ Overdue</p>
+
+            {% else %}
+                <p>⏳ Pending</p>
+            {% endif %}
+        </div>
+
+        <hr>
+
+    {% empty %}
+
+        <p>No chores yet.</p>
+
+    {% endfor %}
+
+</body>
+</html>
